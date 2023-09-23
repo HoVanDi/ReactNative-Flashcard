@@ -1,61 +1,40 @@
-import React, { Component } from 'react';
-import { View, Text, Animated, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // Import thư viện định tuyến
 
-class Flashcard extends Component {
-    state = {
-        isFlipped: false,
-        flipAnimation: new Animated.Value(0),
-        backgroundColor: '#FF3D00',
-    };
+const Flashcard = ({onNext}) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const characters = ['コ', 'モ', 'あ', 'い', 'う']; // Thêm các chữ cái bạn muốn chuyển đổi
+    const navigation = useNavigation(); // Sử dụng hook định tuyến
+  
+  const handleFlip = () => {
+    setCurrentIndex((prevIndex) => (prevIndex === characters.length - 1 ? 0 : prevIndex + 1));
+  };
 
-    handleFlip = () => {
-        const { isFlipped, flipAnimation } = this.state;
-        Animated.timing(flipAnimation, {
-            toValue: isFlipped ? 0 : 180,
-            duration: 500,
-            useNativeDriver: false, // Sử dụng native driver tùy thuộc vào phiên bản
-        }).start(() => {
-            this.setState({ isFlipped: !isFlipped });
-        });
-    };
+  const handleNext = () => {
+    onNext(); // Gọi hàm onNext để chuyển màn hình
+  };
 
-    render() {
-        const { isFlipped, flipAnimation } = this.state;
-        const flipDegree = flipAnimation.interpolate({
-            inputRange: [0, 0],
-            outputRange: ['0deg', '0deg'],
-        });
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={handleFlip}>
+        <View style={styles.card}>
+          <Text style={styles.text}>
+          {characters[currentIndex]}
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleNext}>
+        <Text style={styles.rightbtn}>Next</Text>
+      </TouchableOpacity>
+      <Text style={styles.leftbtn}>Previous</Text>
+      <Text style={styles.middlebtn}>Previous</Text>
+      <Text style={styles.middle2btn}>Previous</Text>
+    </View>
+  );
+};
 
-        return (
-            <View style={styles.container} >
-                <TouchableOpacity onPress={this.handleFlip}>
-                    <Animated.View
-                        
-                    >
-                        <View style={styles.card}>
-                            <Text style={styles.text}>
-                                {isFlipped ? 'コ' : 'モ'}
-                            </Text>
-                        </View>
-                    </Animated.View>
-                </TouchableOpacity>
-                <Text style={styles.rightbtn}>
-                   Next
-                </Text>
-                <Text style={styles.leftbtn}>
-                    Pervisouns
-                </Text>
-
-                <Text style={styles.middlebtn}>
-                    Pervisouns
-                </Text>
-                <Text style={styles.middle2btn}>
-                    Pervisouns
-                </Text>
-            </View>
-        );
-    }
-}
+export default Flashcard;
 
 const styles = StyleSheet.create({
 
