@@ -1,77 +1,101 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Import thư viện định tuyến
 
-const Flashcard = ({onNext}) => {
+const Play = () => {
+    const initialCharacterPairs = [
+        { front: 'コ', back: 'Cảm ơn' },
+        { front: 'モ', back: 'Xin chào' },
+        { front: 'あ', back: 'Đẹp Trai' },
+        { front: 'い', back: 'Tốt bụng' },
+        { front: 'う', back: 'Trung thực' },
+    ];
+
+    const [characterPairs, setCharacterPairs] = useState([...initialCharacterPairs]);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const characters = ['コ', 'モ', 'あ', 'い', 'う']; // Thêm các chữ cái bạn muốn chuyển đổi
-    const navigation = useNavigation(); // Sử dụng hook định tuyến
-  
-  const handleFlip = () => {
-    setCurrentIndex((prevIndex) => (prevIndex === characters.length - 1 ? 0 : prevIndex + 1));
-  };
+    const [isFlipped, setIsFlipped] = useState(false);
 
-  const handleNext = () => {
-    onNext(); // Gọi hàm onNext để chuyển màn hình
-  };
+    const handleFlip = () => {
+        setIsFlipped(!isFlipped);
+    };
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={handleFlip}>
-        <View style={styles.card}>
-          <Text style={styles.text}>
-          {characters[currentIndex]}
-          </Text>
+    const handleNext = () => {
+        setIsFlipped(false);
+        setCurrentIndex((prevIndex) => (prevIndex === characterPairs.length - 1 ? 0 : prevIndex + 1));
+    };
+
+    const handlePrevious = () => {
+        setIsFlipped(false);
+        setCurrentIndex((prevIndex) => (prevIndex === characterPairs.length - 1 ? 0 : prevIndex - 1));
+    };
+
+    const handleRemoveFromDeck = () => {
+        // Xóa thẻ hiện tại khỏi mảng characterPairs
+        const updatedPairs = [...characterPairs];
+        updatedPairs.splice(currentIndex, 1);
+        setCharacterPairs(updatedPairs);
+        // Nếu currentIndex vượt quá độ dài của mảng, đặt lại currentIndex
+        if (currentIndex >= updatedPairs.length) {
+            setCurrentIndex(0);
+        }
+    };
+
+    const handleResetDeck = () => {
+        // Đặt lại mảng characterPairs thành mảng ban đầu
+        setCharacterPairs([...initialCharacterPairs]);
+        setCurrentIndex(0);
+    };
+
+    const currentCharacter = isFlipped ? characterPairs[currentIndex].back : characterPairs[currentIndex].front;
+    return (
+        <View style={styles.container}>
+            <TouchableOpacity onPress={handleFlip}>
+                <View style={styles.card}>
+                    <Text style={styles.text}>
+                        {currentCharacter}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleNext}>
+                <Text style={styles.rightbtn}>Next</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handlePrevious}>
+                <Text style={styles.leftbtn}>Previous</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.middlebtn} onPress={handleRemoveFromDeck}>
+                <Text style={styles.remove} >Remove From Deck</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.middle2btn} onPress={handleResetDeck}>
+                <Text style={styles.Reset} >Reset Deck</Text>
+            </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleNext}>
-        <Text style={styles.rightbtn}>Next</Text>
-      </TouchableOpacity>
-      <Text style={styles.leftbtn}>Previous</Text>
-      <Text style={styles.middlebtn}>Previous</Text>
-      <Text style={styles.middle2btn}>Previous</Text>
-    </View>
-  );
+    );
 };
 
-export default Flashcard;
+export default Play;
+
 
 const styles = StyleSheet.create({
-
     container: {
-        
     },
     card: {
-        marginTop:-80,
-        marginBottom:60,
+        marginTop: 10,
+        marginBottom: 60,
         height: 350,
-        paddingTop:160,
-        width:300,
-        padding:40,
+        paddingTop: 140,
+        width: 300,
+        padding: 40,
         backgroundColor: '#FF3D00',
-        borderRadius:20,
+        borderRadius: 20,
+        marginLeft: 28,
     },
 
     text: {
-        textAlign:'center',
-        color:'#fff',
+        textAlign: 'center',
+        color: '#fff',
         fontSize: 40,
     },
     rightbtn: {
-        right:0,
-        bottom:0,
-        position:'absolute',
-        padding: 10,
-        borderWidth: 1,
-        width: 120,
-        borderRadius: 5,
-        color: "#FF3D00",
-        borderColor: '#FF3D00', 
-        textAlign:'center'
-    },
-
-    leftbtn: {
-        left: 0,
+        right: 30,
         bottom: 0,
         position: 'absolute',
         padding: 10,
@@ -83,24 +107,45 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
 
+    leftbtn: {
+        left: 30,
+        bottom: 0,
+        position: 'absolute',
+        padding: 10,
+        borderWidth: 1,
+        width: 120,
+        borderRadius: 5,
+        color: "#FF3D00",
+        borderColor: '#FF3D00',
+        textAlign: 'center'
+    },
+
+    remove: {
+        color: "#FF3D00",
+        textAlign: 'center',
+    },
+
     middlebtn: {
-        backgroundColor:'#fff',
-        left: 0,
-        top: 360,
+        backgroundColor: '#fff',
+        left: 30,
+        top: 450,
         position: 'absolute',
         padding: 10,
         borderWidth: 1,
         width: 300,
         borderRadius: 5,
-        color:"#FF3D00",
         borderColor: '#FF3D00',
-        textAlign: 'center'
+    },
+
+    Reset: {
+        color: "#FF3D00",
+        textAlign: 'center',
     },
 
     middle2btn: {
         backgroundColor: '#fff',
-        left: 0,
-        top: 420,
+        left: 30,
+        top: 520,
         position: 'absolute',
         padding: 10,
         borderWidth: 1,
@@ -108,9 +153,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         color: "#FF3D00",
         borderColor: '#FF3D00',
-        textAlign: 'center' 
+        textAlign: 'center'
     }
-
 });
 
-export default Flashcard
+
