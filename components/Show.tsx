@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Setting from "./Setting";
 import Play from "./Play";
 import Icon from 'react-native-vector-icons/FontAwesome';
+// import {Text } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 

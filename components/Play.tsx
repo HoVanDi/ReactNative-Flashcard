@@ -13,6 +13,7 @@ const Play = () => {
     const [characterPairs, setCharacterPairs] = useState([...initialCharacterPairs]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
+    const [hasData, setHasData] = useState(true);
 
     const handleFlip = () => {
         setIsFlipped(!isFlipped);
@@ -25,17 +26,23 @@ const Play = () => {
 
     const handlePrevious = () => {
         setIsFlipped(false);
-        setCurrentIndex((prevIndex) => (prevIndex === characterPairs.length - 1 ? 0 : prevIndex - 1));
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? characterPairs.length - 1 : prevIndex - 1));
     };
 
     const handleRemoveFromDeck = () => {
-        // Xóa thẻ hiện tại khỏi mảng characterPairs
-        const updatedPairs = [...characterPairs];
-        updatedPairs.splice(currentIndex, 1);
-        setCharacterPairs(updatedPairs);
-        // Nếu currentIndex vượt quá độ dài của mảng, đặt lại currentIndex
-        if (currentIndex >= updatedPairs.length) {
-            setCurrentIndex(0);
+        if (characterPairs.length === 1) {
+            // Nếu chỉ còn một phần tử, đặt hasData thành false
+            setHasData(false);
+        } else {
+            // Xóa thẻ hiện tại khỏi mảng characterPairs
+            const updatedPairs = [...characterPairs];
+            updatedPairs.splice(currentIndex, 1);
+            setCharacterPairs(updatedPairs);
+
+            // Nếu currentIndex vượt quá độ dài của mảng, đặt lại currentIndex thành 0
+            if (currentIndex >= updatedPairs.length) {
+                setCurrentIndex(0);
+            }
         }
     };
 
@@ -43,15 +50,17 @@ const Play = () => {
         // Đặt lại mảng characterPairs thành mảng ban đầu
         setCharacterPairs([...initialCharacterPairs]);
         setCurrentIndex(0);
+        setHasData(true);
     };
 
     const currentCharacter = isFlipped ? characterPairs[currentIndex].back : characterPairs[currentIndex].front;
     return (
         <View style={styles.container}>
+            <Text style={styles.playText}>Play ({characterPairs.length} cards)</Text>
             <TouchableOpacity onPress={handleFlip}>
                 <View style={styles.card}>
                     <Text style={styles.text}>
-                        {currentCharacter}
+                        {hasData ? currentCharacter : "Không có dữ liệu"}
                     </Text>
                 </View>
             </TouchableOpacity>
@@ -62,10 +71,10 @@ const Play = () => {
                 <Text style={styles.leftbtn}>Previous</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.middlebtn} onPress={handleRemoveFromDeck}>
-                <Text style={styles.remove} >Remove From Deck</Text>
+                <Text style={styles.remove}>Remove From Deck</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.middle2btn} onPress={handleResetDeck}>
-                <Text style={styles.Reset} >Reset Deck</Text>
+                <Text style={styles.Reset}>Reset Deck</Text>
             </TouchableOpacity>
         </View>
     );
@@ -76,6 +85,16 @@ export default Play;
 
 const styles = StyleSheet.create({
     container: {
+    },
+
+    playText: {
+        textAlign: 'center',
+    },
+
+    headerText: {
+        textAlign: 'center',
+        color: "#FF3D00",
+        // fontSize:10,
     },
     card: {
         marginTop: 10,
@@ -145,7 +164,7 @@ const styles = StyleSheet.create({
     middle2btn: {
         backgroundColor: '#fff',
         left: 30,
-        top: 520,
+        top: 500,
         position: 'absolute',
         padding: 10,
         borderWidth: 1,
